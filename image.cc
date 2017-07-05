@@ -1,5 +1,5 @@
 #include "image.hh"
-#include "FFT.hh"
+#include "FFT2D.hh"
 
 im::im(int height, int width)
 : red(std::valarray<Complex>(Complex(0,0), width), height),
@@ -121,7 +121,7 @@ void im::compression(double ratio)
     for (unsigned x = 0; x < width; ++x)
     {
       for (int i = 0; i < 3; ++i) {
-        compress((*components[i])[y][x], max, ratio));
+        compress((*components[i])[y][x], max, (double) ratio);
       }
     }
   }
