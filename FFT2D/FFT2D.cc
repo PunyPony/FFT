@@ -14,17 +14,6 @@ void RecursiveFFT(std::valarray<Complex>& ComplexCoef/*, unsigned thread_gen*/)
 
   std::valarray<Complex> even = ComplexCoef[std::slice(0, N/2, 2)];
   std::valarray<Complex> odd = ComplexCoef[std::slice(1, N/2, 2)];
-
-  /*if (thread_gen > 0)
-    {
-    RecursiveFFT(even, thread_gen - 1);
-    std::thread ladouille(RecursiveFFT, std_ref(odd), thread_gen - 1);
-    }
-    else
-    {
-    RecursiveFFT(even, 0);
-    RecursiveFFT(odd, 0);
-    }*/
   RecursiveFFT(even);
   RecursiveFFT(odd);
 
@@ -113,36 +102,6 @@ size_t sup_pow_two(size_t n)
     m *= 2;
   return m;
 }
-
-/*
-   int main(int argc, char *argv[])
-   {
-   std::string coefA;
-   std::string coefB;
-   if (argc == 3)
-   {
-   coefA = argv[1];
-   coefB = argv[2];
-   }
-
-   else
-   {
-   std::cout << "Please enter a number" << '\n';
-   std::cin >> coefA;
-   std::cout << "Please enter a second number" << '\n';
-   std::cin >> coefB;
-   }
-
-   auto A = FulfillValarray(coefA);
-   auto B = FulfillValarray(coefB);
-   std::valarray<Complex> C = MulWithFFT(A,B);
-   std::vector<int> res = Base10(C);
-
-   for (auto x: res)
-   std::cout << x;
-   return 0;
-   }
-   */
 
 void print(std::valarray<std::valarray<Complex>> im)
 {
