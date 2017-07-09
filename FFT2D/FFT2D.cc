@@ -1,3 +1,4 @@
+#include <thread>
 #include "FFT2D.hh"
 #include "image.hh"
 #include "timer.hh"
@@ -9,12 +10,16 @@ void RecursiveFFT(std::valarray<Complex>& ComplexCoef)
   std::valarray<Complex> even = ComplexCoef[std::slice(0, N/2, 2)];
   std::valarray<Complex> odd = ComplexCoef[std::slice(1, N/2, 2)];
   RecursiveFFT(even);
+/*
   if (thread_number > 0)
   {
+    std::cout << "tarte au foin" << std::endl;
     thread_number--;
-    std::thread(RecursiveFFT, odd);
+    std::thread t(RecursiveFFT,odd);
+    //std::thread thread([odd] {RecursiveFFT;});
   }
   else
+  */
     RecursiveFFT(odd);
   
   for (size_t k = 0; k < N/2; ++k)

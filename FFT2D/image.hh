@@ -28,7 +28,7 @@ class im
   unsigned width;
 };
 
-//rewrite this
+//buggy functions do not use
 im compres_fftim(im image, double r);
 im decompres_fftim(im image);
 
