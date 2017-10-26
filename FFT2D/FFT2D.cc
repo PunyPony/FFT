@@ -10,16 +10,22 @@ void RecursiveFFT(std::valarray<Complex>& ComplexCoef)
   std::valarray<Complex> even = ComplexCoef[std::slice(0, N/2, 2)];
   std::valarray<Complex> odd = ComplexCoef[std::slice(1, N/2, 2)];
   RecursiveFFT(even);
-/*
+
   if (thread_number > 0)
   {
-    std::cout << "tarte au foin" << std::endl;
-    thread_number--;
-    std::thread t(RecursiveFFT,odd);
-    //std::thread thread([odd] {RecursiveFFT;});
+    int true_thread_number = thread_number;
+    double time = 0;
+    {
+      scoped_timer timer(time);
+      std::cout << "Thread " << thread_number << " running" << std::endl;
+      thread_number--;
+      std::thread t(RecursiveFFT, std::ref(odd));
+      t.join();
+    }
+    std::cout << "Thread " << true_thread_number << " end : " << time << "s" << std::endl; 
+    
   }
   else
-  */
     RecursiveFFT(odd);
   
   for (size_t k = 0; k < N/2; ++k)
@@ -83,7 +89,7 @@ size_t sup_pow_two(size_t n)
   return m;
 }
 
-void print(std::valarray<std::valarray<Complex>> im)
+void print(const std::valarray<std::valarray<Complex>>& im)
 {
   for (std::size_t i = 0; i < im.size(); i++)
     for (std::size_t j = 0; j < im[i].size(); j++)
@@ -104,10 +110,10 @@ int main(int argc, char* argv[])
     FFT2D(image);
     image.shift();
     image.imsave("fftoutput.ppm");
-    image.compression((double) 1/3000); // ! double
+    image.compression((double) 1/500); // ! double
     image.shift();
     FFT2DInverse(image);
     image.imsave("output.ppm");
   }
-  std::cout << "time : " << time << std::endl;
+  std::cout << "Total time : " << time << "s" << std::endl;
 }

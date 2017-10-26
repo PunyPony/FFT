@@ -17,4 +17,5 @@ void FFT2DInverse(im& image);
 void linesFFT2D(im& image);
 void linesFFT2DInverse(im& image);
 void FFT2D(im& image);
+void print(const std::valarray<std::valarray<Complex>>& im);
 size_t sup_pow_two(size_t n);
