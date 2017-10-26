@@ -11,21 +11,22 @@ void RecursiveFFT(std::valarray<Complex>& ComplexCoef)
   std::valarray<Complex> odd = ComplexCoef[std::slice(1, N/2, 2)];
   RecursiveFFT(even);
 
-  if (thread_number > 0)
+  /*
+  if (thread_number < 7)
   {
     int true_thread_number = thread_number;
     double time = 0;
     {
       scoped_timer timer(time);
       std::cout << "Thread " << thread_number << " running" << std::endl;
-      thread_number--;
+      thread_number++;
       std::thread t(RecursiveFFT, std::ref(odd));
       t.join();
     }
     std::cout << "Thread " << true_thread_number << " end : " << time << "s" << std::endl; 
-    
   }
   else
+  */
     RecursiveFFT(odd);
   
   for (size_t k = 0; k < N/2; ++k)
@@ -38,14 +39,25 @@ void RecursiveFFT(std::valarray<Complex>& ComplexCoef)
 
 void linesFFT2D(im& image)
 {
+
+  for(unsigned icolor = 0; icolor < image.components.size(); icolor++)
+  {
+    std::valarray<std::valarray<Complex>>* color = image.components[icolor];
+    #pragma omp parallel for num_threads(8)
+    for(unsigned i = 0; i < color->size(); i++)
+      RecursiveFFT((*color)[i]);
+  }
+
+  /*
   for(auto comp_it = std::begin(image.components);
       comp_it != std::end(image.components); comp_it++)
     for(auto it = std::begin(**comp_it);
     it != std::end(**comp_it); it++)
     {
-      thread_number = 8;
+      thread_number = 0;
       RecursiveFFT(*it);
     }
+  */
 }
 
 void FFT2D(im& image)
@@ -57,17 +69,32 @@ void FFT2D(im& image)
 
 void linesFFT2DInverse(im& image)
 {
+  for(unsigned icolor = 0; icolor < image.components.size(); icolor++)
+  {
+    std::valarray<std::valarray<Complex>>* color = image.components[icolor];
+    #pragma omp parallel for num_threads(8)
+    for(unsigned i = 0; i < color->size(); i++)
+    {
+      (*color)[i] = (*color)[i].apply(std::conj);
+      RecursiveFFT((*color)[i]);
+      (*color)[i] =(*color)[i].apply(std::conj);
+      (*color)[i] /= (*color)[i].size();
+    }
+  }
+
+  /*
 for(auto comp_it = std::begin(image.components);
     comp_it != std::end(image.components); comp_it++)
     for(auto it = std::begin(**comp_it);
     it != std::end(**comp_it); it++)
   {
     *it = it->apply(std::conj);
-    thread_number = 8;
+    thread_number = 0;
     RecursiveFFT(*it);
     *it = it->apply(std::conj);
     *it /= it->size();
   }
+  */
 }
 
 void FFT2DInverse(im& image)
@@ -105,7 +132,7 @@ int main(int argc, char* argv[])
     im image = im::imread(std::string(argv[1]));
     FFT2D(image);
     image.shift();
-    image.imsave("fftoutput.ppm");
+    image.imsave("fftoutput.ppm"); 
     image.compression((double) 1/500); // ! double
     image.shift();
     FFT2DInverse(image);

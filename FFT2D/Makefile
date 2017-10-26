@@ -1,5 +1,5 @@
 CC = clang++
-FLAGS = -Wall -Wextra -pedantic -std=c++14 -lpthread -O3 #-fopenmp
+FLAGS = -Wall -Wextra -pedantic -std=c++14 -lpthread -O3 -fopenmp
 FILES = FFT2D.cc image.cc
 
 all:

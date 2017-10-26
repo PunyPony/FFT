@@ -9,7 +9,7 @@
 #include <thread>
 #include "image.hh"
 #define PI 3.141592653589793238460
-static std::atomic<int> thread_number(8);
+static std::atomic<int> thread_number(0);
 
 typedef std::complex<double> Complex;
 void RecursiveFFT(std::valarray<Complex>& ComplexCoef);

@@ -46,12 +46,13 @@ im im::imread(const std::string& filename)
 
 void im::transpose()
 {
+ std::cout << "Transpose" << std::endl;
  std::valarray<std::valarray<Complex>> redt(std::valarray<Complex>(Complex(0,0), width), height);
  std::valarray<std::valarray<Complex>> bluet(std::valarray<Complex>(Complex(0,0), width), height);
  std::valarray<std::valarray<Complex>> greent(std::valarray<Complex>(Complex(0,0), width), height);
- //#pragma omp parallel for
-  for (unsigned y = 0; y < height; ++y)
-    for (unsigned x = 0; x < width; ++x)
+ #pragma omp parallel for num_threads(8)
+ for (unsigned y = 0; y < height; ++y)
+  for (unsigned x = 0; x < width; ++x)
     {
       redt[x][y] = red[y][x];
       bluet[x][y] = blue[y][x];
@@ -64,10 +65,11 @@ void im::transpose()
 
 void im::shift()
 {
+  std::cout << "Shift" << std::endl;
   std::valarray<std::valarray<Complex>> reds(std::valarray<Complex>(Complex(0,0), width), height);
   std::valarray<std::valarray<Complex>> blues(std::valarray<Complex>(Complex(0,0), width), height);
   std::valarray<std::valarray<Complex>> greens(std::valarray<Complex>(Complex(0,0), width), height);
-  //#pragma omp parallel for
+  #pragma omp parallel for num_threads(8)
   for (unsigned y = 0; y < height; ++y)
     for (unsigned x = 0; x < width; ++x)
     {
@@ -91,11 +93,16 @@ Complex im::compress(Complex& c, double m, double compression)
 
 void im::compression(double ratio)
 {
+  std::cout << "Compress" << std::endl;
   double max = 0;
+
+  #pragma omp parallel for num_threads(8)
   for (unsigned y = 0; y < height; ++y)
     for (unsigned x = 0; x < width; ++x)
       if (std::abs(red[y][x]) > max)
         max = std::abs(red[y][x]);
+
+  #pragma omp parallel for num_threads(8)
   for (unsigned y = 0; y < height; ++y)
     for (unsigned x = 0; x < width; ++x)
       for (int i = 0; i < 3; ++i) 
