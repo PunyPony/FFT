@@ -42,7 +42,10 @@ void linesFFT2D(im& image)
       comp_it != std::end(image.components); comp_it++)
     for(auto it = std::begin(**comp_it);
     it != std::end(**comp_it); it++)
+    {
+      thread_number = 8;
       RecursiveFFT(*it);
+    }
 }
 
 void FFT2D(im& image)
@@ -60,6 +63,7 @@ for(auto comp_it = std::begin(image.components);
     it != std::end(**comp_it); it++)
   {
     *it = it->apply(std::conj);
+    thread_number = 8;
     RecursiveFFT(*it);
     *it = it->apply(std::conj);
     *it /= it->size();
@@ -71,14 +75,6 @@ void FFT2DInverse(im& image)
   linesFFT2DInverse(image);
   image.transpose();
   linesFFT2DInverse(image);
-}
-
-void InverseFFT(std::valarray<Complex>& ComplexCoef)
-{
-  ComplexCoef = ComplexCoef.apply(std::conj);
-  RecursiveFFT(ComplexCoef);
-  ComplexCoef= ComplexCoef.apply(std::conj);
-  ComplexCoef /= ComplexCoef.size();
 }
 
 size_t sup_pow_two(size_t n)
