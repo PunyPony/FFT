@@ -109,53 +109,6 @@ void im::compression(double ratio)
         compress((*components[i])[y][x], max, (double) ratio); // ! double 
 }
 
-im compres_fftim(im image, double r)
-{
-  if (r > 1.0)
-  {
-    std::cout << "r > 1.0" << std::endl;
-    exit(1);
-    //return image;
-  }
-  unsigned height = image.height * r;
-  //unsigned width = (image.width * r)/2;
-  unsigned width = image.width * r;
-  im reduc(height , width);
-
-  int dw = (image.width - image.width*r) / 2;
-  int dh = (image.height - image.height*r) / 2;
-
-  for (unsigned y = 0; y < height ; ++y)
-    for (unsigned x = 0; x < width; ++x)
-      for (int i = 0; i < 3; ++i) 
-      {
-          auto r_comp = reduc.components;
-          auto i_comp = image.components;
-          (*r_comp[i])[y][x] = (*i_comp[i])[y + dh][x + dw];
-      }
-  return reduc;
-}
-
-im decompres_fftim(im reduc)
-{
-  //size_t width_size = sup_pow_two(reduc.width*2);
-  size_t width_size = sup_pow_two(reduc.width);
-  size_t height_size = sup_pow_two(reduc.height);
-  std::cout << width_size << std::endl;
-  std::cout << height_size << std::endl;
-  im decompressed(height_size,width_size);
-  for(unsigned y = 0; y < reduc.height; y++)
-    for(unsigned x = 0; x < reduc.width; x++)
-      for (int i = 0; i < 3; ++i) 
-      {
-          auto r_comp = reduc.components;
-          auto d_comp = decompressed.components;
-          (*d_comp[i])[y + (decompressed.height - reduc.height) / 2][x + (decompressed.width - reduc.width) / 2] = (*r_comp[i])[y][x];
-          //(*d_comp[i])[y + (decompressed.height - reduc.height) / 2][- x + decompressed.width - (decompressed.width - reduc.width) / 2] = (*r_comp[i])[y][x];
-      }
-  return decompressed;
-}
-
 uint8_t clamp(double n) {
   if (n < 0)
     return 0;
